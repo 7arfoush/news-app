@@ -1,15 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/features/display_news/presentation/provider.dart';
 import 'package:news_app/features/display_news/presentation/ui.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
+void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   late final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
