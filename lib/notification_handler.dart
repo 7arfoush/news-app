@@ -5,11 +5,16 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
 class NotificationHandler {
-  static Future<void> sendNotification() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    await messaging.subscribeToTopic('all');
-    String? token = await messaging.getToken();
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  late String? token;
 
+  NotificationHandler() {
+    init();
+  }
+
+  Future<void> init() async {
+    await messaging.subscribeToTopic('all');
+    token = await messaging.getToken();
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
@@ -28,7 +33,9 @@ class NotificationHandler {
     } else {
       print('User declined or has not accepted permission');
     }
+  }
 
+  Future<void> sendNotification() async {
     final post = await http.post(
         Uri.parse(
           'https://fcm.googleapis.com/fcm/send',
@@ -52,11 +59,8 @@ class NotificationHandler {
           "to": "/topics/all"
         }));
 
-    if (post.statusCode == 200) {
-      print('ALl good');
-      print(post.body);
-    } else {
-      print('${post.statusCode} Not this time, chief.');
+    if (post.statusCode != 200) {
+      throw Exception('ERROR ${post.statusCode}');
     }
   }
 }
